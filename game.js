@@ -3,11 +3,11 @@ var buttonColors=["red","blue","green","yellow"];
 var gamePattern=[];
 var userPattern=[];
 var level=0;
-var count=0;//the number of times the buttons are pressed
 
 $(document).keydown(function(){
-  //Start of game, the first button is shown
+  //when keyboard is pressed, game always restarts
   alert("Let the game begin")
+  startOver();
   if (level===0){
     nextSequence();
   }})
@@ -21,19 +21,6 @@ $(".btn").click(function(){
   //Checks user input everytime key is pressed
   checkAnswer(userPattern.length-1);})
 
-
-
-//   $(".btn").click(function(){
-//     console.log("hi");
-//     var userChosenColor=$(this).attr("id");
-//     console.log(userChosenColor);
-//     userPattern.push(userChosenColor);
-//     console.log(userPattern);
-//     animatePress(userChosenColor);
-//     playSound(userChosenColor);
-//   })
-// }
-
 function playSound(name){
   var button=new Audio("sounds/"+name+".mp3");
   button.play();
@@ -41,10 +28,23 @@ function playSound(name){
 function animatePress(currentColor){
   $("#"+currentColor).fadeIn(100).fadeOut(100).fadeIn(100);
 }
+function gameOver(){
+  playSound("wrong");
+  $("body").addClass("game-over")
+  setTimeout(function () {
+    $("body").removeClass("game-over")
+  }, 200);
+  $("h1").text("Game Over, Press Any Key to Restart");
+  startOver();
+}
+function startOver(){
+  level=0;
+  gamePattern=[];
+}
 function nextSequence(){
+  //reset user input
   userPattern=[];
-  console.log("user after reset:"+userPattern)
-
+  //generate the next button to be pressed randomly
   var randomNumber=Math.floor(Math.random()*4);
   var randomChosenColor=buttonColors[randomNumber];
   animatePress(randomChosenColor);
@@ -67,13 +67,17 @@ function checkAnswer(currentLevel){
         nextSequence();
       }, 1000);
     }
-
-
-  else if (userPattern.length==gamePattern.length) {
-    console.log("wrong")
   }
 
-}}
+
+  else {
+    console.log("wrong")
+    gameOver();
+
+
+  }
+
+}
 
 // When click, trigger handler function to register the button pressed
 
